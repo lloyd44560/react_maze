@@ -1,0 +1,23 @@
+/* MazeGame.css */
+.maze {
+    display: grid;
+    grid-template-columns: repeat(8, 30px);
+    grid-template-rows: repeat(8, 30px);
+    gap: 2px;
+  }
+  
+  .maze-row {
+    display: flex;
+  }
+  
+  .maze-cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+  }
+  
+  .player {
+    background-color: #00f;
+  }
+  
