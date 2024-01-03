@@ -22,7 +22,8 @@
 }
 
 .player {
-  background-color: red;
+  content: 'P'; /* Replace 'P' with the character you want */
+  font-size: 16px; /* Adjust the font size as needed */
 }
 
 .goal {

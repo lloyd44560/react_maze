@@ -1,6 +1,6 @@
 // Instructions.js
 import React from 'react';
-
+import './App.css';
 const Instructions = ({ onBack }) => {
   return (
     <div>
