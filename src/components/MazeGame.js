@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 const levels = [
-  { rows: 8, cols: 8, walls: [[1, 0], [0, ], ] },   // Level 1 (with a wall at (1, 1))
+  { rows: 8, cols: 8, walls: [[1, 0], [0, 1]] }, // Level 1 (with a wall at (1, 0) and (0, 1))
   { rows: 16, cols: 16, walls: [[5, 5], [7, 8], [12, 10]] }, // Level 2 (example walls)
   { rows: 32, cols: 32, walls: [[8, 15], [20, 25], [28, 30]] }, // Level 3 (example walls)
 ];
@@ -13,6 +13,44 @@ const Maze = ({ onLevelChange }) => {
   const [isGameWon, setIsGameWon] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(0);
+
+  const movePlayer = (dx, dy) => {
+    const newPosition = { x: position.x + dx, y: position.y + dy };
+
+    if (
+      newPosition.x >= 0 &&
+      newPosition.x < levels[currentLevel].cols &&
+      newPosition.y >= 0 &&
+      newPosition.y < levels[currentLevel].rows &&
+      !isWall(newPosition.x, newPosition.y)
+    ) {
+      setPosition(newPosition);
+
+      if (newPosition.x === goal.x && newPosition.y === goal.y) {
+        setIsGameWon(true);
+
+        if (currentLevel < levels.length - 1) {
+          setCurrentLevel((prevLevel) => {
+            const nextLevel = prevLevel + 1;
+            setGoal({ x: levels[nextLevel].cols - 1, y: levels[nextLevel].rows - 1 });
+            setPosition({ x: 0, y: 0 });
+            setIsGameWon(false);
+            onLevelChange(nextLevel);
+
+            if (nextLevel < levels.length) {
+              alert(`Congratulations! You completed Level ${nextLevel}`);
+              return nextLevel;
+            } else {
+              alert('Congratulations! You completed all levels!');
+              return prevLevel;
+            }
+          });
+        } else {
+          alert('Congratulations! You completed all levels!');
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     // Check if the device is a mobile device
@@ -48,46 +86,7 @@ const Maze = ({ onLevelChange }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [position, goal, isGameWon, isMobile, currentLevel]);
-
-  const movePlayer = (dx, dy) => {
-    const newPosition = { x: position.x + dx, y: position.y + dy };
-
-    if (
-      newPosition.x >= 0 &&
-      newPosition.x < levels[currentLevel].cols &&
-      newPosition.y >= 0 &&
-      newPosition.y < levels[currentLevel].rows &&
-      !isWall(newPosition.x, newPosition.y)
-    ) {
-      setPosition(newPosition);
-
-      if (newPosition.x === goal.x && newPosition.y === goal.y) {
-        setIsGameWon(true);
-
-        if (currentLevel < levels.length - 1) {
-          setCurrentLevel((prevLevel) => {
-            const nextLevel = prevLevel + 1;
-            setGoal({ x: levels[nextLevel].cols - 1, y: levels[nextLevel].rows - 1 });
-            setPosition({ x: 0, y: 0 });
-            setIsGameWon(false);
-            onLevelChange(nextLevel);
-          
-            if (nextLevel < levels.length) {
-              alert(`Congratulations! You completed Level ${nextLevel}`);
-              return nextLevel;
-            } else {
-              alert('Congratulations! You completed all levels!');
-              return prevLevel;
-            }
-          });
-          
-        } else {
-          alert('Congratulations! You completed all levels!');
-        }
-      }
-    }
-  };
+  }, [movePlayer, position, goal, isGameWon, isMobile, currentLevel]);
 
   const isWall = (x, y) => {
     return (
@@ -162,7 +161,9 @@ const Maze = ({ onLevelChange }) => {
       {renderControls()}
     </div>
   );
-};function App() {
+};
+
+function App() {
   const [isGameCompleted, setIsGameCompleted] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(1); // Initialize current level to 1
 
